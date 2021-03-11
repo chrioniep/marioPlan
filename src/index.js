@@ -10,11 +10,15 @@ import thunk from 'redux-thunk';
 import {createFirestoreInstance, reduxFirestore, getFirestore} from 'redux-firestore'
 import {ReactReduxFirebaseProvider, reactReduxFirebase, getFirebase} from 'react-redux-firebase'
 import fbConfig from './config/fbConfig';
-import firebase from 'firebase/app'
+import firebase from 'firebase/app';
+import { useSelector } from 'react-redux'
+import { isLoaded } from 'react-redux-firebase'
 
-// const config = {
-// 	attachAuthIsReady: true
-// }
+const rrfConfig = {
+	userProfile: 'users',
+	useFirestoreForProfile: true,
+	// useFirestoreForProfile: true // Firestore for Profile instead of Realtime DB
+  }
 
 
 const store = createStore(rootReducer, 
@@ -28,16 +32,25 @@ const store = createStore(rootReducer,
 
 const rrfProps = {
 	firebase,
-	config:fbConfig,
+	config:rrfConfig,
 	dispatch:store.dispatch,
 	createFirestoreInstance,
 }
+
+
+function AuthIsLoaded({ children }) {
+	const auth = useSelector(state => state.firebase.auth)
+if (!isLoaded(auth)) return <img src="/loading.gif"/>;
+	return children
+  }
 
 ReactDOM.render(
 	  <React.StrictMode>
 	  <Provider store={store}>
 		  <ReactReduxFirebaseProvider {...rrfProps}>
-		    <App />
+			  <AuthIsLoaded>
+		    	<App />
+			  </AuthIsLoaded>
 		  </ReactReduxFirebaseProvider>
 	  </Provider>
 	  </React.StrictMode>,
@@ -48,3 +61,4 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
