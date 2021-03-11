@@ -12,32 +12,37 @@ import {ReactReduxFirebaseProvider, reactReduxFirebase, getFirebase} from 'react
 import fbConfig from './config/fbConfig';
 import firebase from 'firebase/app'
 
+// const config = {
+// 	attachAuthIsReady: true
+// }
+
 
 const store = createStore(rootReducer, 
 	compose(
+		// reactReduxFirebase(firebase, config),
 		applyMiddleware(thunk.withExtraArgument({getFirebase, getFirestore})),
 		reduxFirestore(firebase, fbConfig),
-		// reactReduxFirebase(firebase, fbConfig)
+		// reactReduxFirebase(firebase, config)
 	)
-	);
+);
 
 const rrfProps = {
 	firebase,
 	config:fbConfig,
 	dispatch:store.dispatch,
-	createFirestoreInstance
+	createFirestoreInstance,
 }
 
 ReactDOM.render(
-  <React.StrictMode>
-  <Provider store={store}>
-	  <ReactReduxFirebaseProvider {...rrfProps}>
-	    <App />
-	  </ReactReduxFirebaseProvider>
-  </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+	  <React.StrictMode>
+	  <Provider store={store}>
+		  <ReactReduxFirebaseProvider {...rrfProps}>
+		    <App />
+		  </ReactReduxFirebaseProvider>
+	  </Provider>
+	  </React.StrictMode>,
+	  document.getElementById('root')
+	);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
